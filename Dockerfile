@@ -36,4 +36,4 @@ ENV CRUNCHBASE_PASSWORD=your_password
 ENV SCRAPE_LIMIT=10
 
 # Run the script
-CMD ["python", "crunchbase_scraper.py"]
+CMD ["python", "main.py"]
