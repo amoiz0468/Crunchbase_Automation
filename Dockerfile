@@ -1,10 +1,11 @@
 FROM python:3.9-slim
 
-# Install Chrome and dependencies
+# Install Chrome, dependencies, and git
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
     unzip \
+    git \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
@@ -20,9 +21,9 @@ RUN CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_
 # Set up the working directory
 WORKDIR /app
 
-# Copy the Python script and requirements
-COPY crunchbase_scraper.py .
-COPY requirements.txt .
+# Clone the GitHub repository
+ARG GITHUB_REPO_URL
+RUN git clone ${GITHUB_REPO_URL} .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -31,8 +32,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir -p /app/data
 
 # Set environment variables
-ENV CRUNCHBASE_EMAIL=your_email@example.com
-ENV CRUNCHBASE_PASSWORD=your_password
+ENV CRUNCHBASE_EMAIL=bdm@bracketsltd.com
+ENV CRUNCHBASE_PASSWORD=@Brackets23
 ENV SCRAPE_LIMIT=10
 
 # Run the script
