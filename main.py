@@ -272,8 +272,8 @@ def update_progress(progress_file, index):
 
 if __name__ == "__main__":
 
-    email = "bdm@bracketsltd.com"
-    password = "@Brackets23"
+    email = ""
+    password = ""
 
     with open('progress.txt','r') as file:
         no_of_org = file.read()
