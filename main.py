@@ -12,24 +12,23 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementClickInterceptedException
 from webdriver_manager.chrome import ChromeDriverManager
 
-
 class Constants:
     SCROLL_DELAY = random.uniform(2, 5)
     BUTTON_CLICK_DELAY = random.randint(5, 10)
-    CHROME_PROFILE_PATH = "C:\\Users\\Brackets\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 8"
     LOGIN_URL = "https://www.crunchbase.com/login"
     HOMEPAGE_URL = "https://www.crunchbase.com"
-    ORGANIZATION_CSV = "organizations.csv"  # CSV file containing organization URLs
-    PROGRESS_FILE = "progress.txt"  # File to keep track of progress
-
+    ORGANIZATION_CSV = "/app/data/organizations.csv"
+    PROGRESS_FILE = "/app/data/progress.txt"
+    OUTPUT_CSV = "/app/data/crunchbase_contacts.csv"
 
 def initialize_driver():
     options = Options()
-    options.add_argument(f"user-data-dir={Constants.CHROME_PROFILE_PATH}")
-    options.add_argument("profile-directory=Default")
-    options.add_experimental_option("detach", True)
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
+
 def login_to_crunchbase(driver, email, password):
     driver.get(Constants.HOMEPAGE_URL)
     wait = WebDriverWait(driver, 20)
@@ -271,42 +270,38 @@ def update_progress(progress_file, index):
         file.write(str(index))
 
 if __name__ == "__main__":
+    email = os.environ.get('bdm@bracketsltd.com')
+    password = os.environ.get('@Brackets23')
+    limit = int(os.environ.get('SCRAPE_LIMIT', 10))
 
-    email = ""
-    password = ""
-
-    with open('progress.txt','r') as file:
+    with open(Constants.PROGRESS_FILE, 'r') as file:
         no_of_org = file.read()
     print("Total organizations fetched : ", no_of_org)
 
-    limit = int(input("Enter limit of organization to be fetched by bot : "))
     driver = initialize_driver()
 
     login_to_crunchbase(driver, email, password)
     random_scroll(driver)
 
     organization_urls, start_index = read_organization_urls(Constants.ORGANIZATION_CSV, Constants.PROGRESS_FILE)
-   # User can specify this
 
     end_index = min(start_index + limit, len(organization_urls))
 
     for i in range(start_index, end_index):
         org_url = organization_urls[i]
-        org_name = extract_org_name_from_url(org_url)  # Extract organization name from URL
+        org_name = extract_org_name_from_url(org_url)
         go_to_people(driver, org_url)
         scroll_to_load_contacts(driver)
 
         contacts = extract_A_details(driver, org_name)
         if contacts:
-            save_to_csv(contacts)
+            save_to_csv(contacts, Constants.OUTPUT_CSV)
 
         employees = extract_B_details(driver, org_name)
         if employees:
-            save_to_csv(employees)
+            save_to_csv(employees, Constants.OUTPUT_CSV)
 
         update_progress(Constants.PROGRESS_FILE, i + 1)
 
-    print("Finished processing the ",limit," organizations.")
-    input("Press Enter to close the browser...")
+    print(f"Finished processing {limit} organizations.")
     driver.quit()
-
