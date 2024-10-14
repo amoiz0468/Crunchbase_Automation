@@ -270,8 +270,8 @@ def update_progress(progress_file, index):
         file.write(str(index))
 
 if __name__ == "__main__":
-    email = os.environ.get('bdm@bracketsltd.com')
-    password = os.environ.get('@Brackets23')
+    email = os.environ.get('')
+    password = os.environ.get('')
     limit = int(os.environ.get('SCRAPE_LIMIT', 10))
 
     with open(Constants.PROGRESS_FILE, 'r') as file:
