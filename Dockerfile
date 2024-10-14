@@ -32,8 +32,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir -p /app/data
 
 # Set environment variables
-ENV CRUNCHBASE_EMAIL=bdm@bracketsltd.com
-ENV CRUNCHBASE_PASSWORD=@Brackets23
+ENV CRUNCHBASE_EMAIL=
+ENV CRUNCHBASE_PASSWORD=
 ENV SCRAPE_LIMIT=10
 
 # Run the script
