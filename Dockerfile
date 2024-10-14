@@ -22,7 +22,7 @@ RUN CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_
 WORKDIR /app
 
 # Clone the GitHub repository
-ARG GITHUB_REPO_URL
+ARG https://github.com/amoiz0468/Crunchbase_Automation.git
 RUN git clone ${GITHUB_REPO_URL} .
 
 # Install Python dependencies
